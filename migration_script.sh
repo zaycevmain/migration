@@ -19,11 +19,34 @@ show_header() {
     echo
 }
 
+# Функция для красивого вывода текущих параметров из конфига
+show_config_summary() {
+    if [ -f "$CONFIG_FILE" ]; then
+        # Загружаем переменные из конфига во временную оболочку
+        unset APP_SERVER_IP APP_SERVER_PORT APP_SERVER_USER APP_SERVER_PASSWORD APP_DIR SQL_SERVER_IP SQL_USER SQL_PASSWORD
+        source "$CONFIG_FILE"
+        echo -e "${YELLOW}Текущие параметры конфига:${NC}"
+        echo "-----------------------------------------------"
+        printf "| %-20s | %-22s |\n" "Параметр" "Значение"
+        echo "-----------------------------------------------"
+        printf "| %-20s | %-22s |\n" "APP_SERVER_IP"     "${APP_SERVER_IP:-не задано}"
+        printf "| %-20s | %-22s |\n" "APP_SERVER_PORT"   "${APP_SERVER_PORT:-не задано}"
+        printf "| %-20s | %-22s |\n" "APP_SERVER_USER"   "${APP_SERVER_USER:-не задано}"
+        printf "| %-20s | %-22s |\n" "APP_SERVER_PASSWORD" "$( [ -n "$APP_SERVER_PASSWORD" ] && echo '****' || echo 'не задано' )"
+        printf "| %-20s | %-22s |\n" "APP_DIR"           "${APP_DIR:-не задано}"
+        printf "| %-20s | %-22s |\n" "SQL_SERVER_IP"     "${SQL_SERVER_IP:-не задано}"
+        printf "| %-20s | %-22s |\n" "SQL_USER"          "${SQL_USER:-не задано}"
+        printf "| %-20s | %-22s |\n" "SQL_PASSWORD"      "$( [ -n "$SQL_PASSWORD" ] && echo '****' || echo 'не задано' )"
+        echo "-----------------------------------------------"
+        echo
+    fi
+}
+
 # Функция для отображения главного меню
 show_main_menu() {
     show_header
-    # Проверка наличия конфига
     if [ -f "$CONFIG_FILE" ]; then
+        show_config_summary
         echo -e "${RED}ВНИМАНИЕ: Файл конфигурации $CONFIG_FILE уже существует!${NC}"
         echo -e "${RED}Будьте внимательны: параметры подключения и базы будут браться из этого файла.${NC}"
     else
